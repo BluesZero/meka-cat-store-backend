@@ -1,4 +1,3 @@
-// server/index.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -8,23 +7,23 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Middleware CORS para permitir tanto local como producción
+// 💡 SOLO permite origenes válidos en desarrollo
+const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL];
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000",           // para desarrollo local
-    "https://mekacatstore.com"         // cambia por tu dominio real si es diferente
-  ],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
   methods: ["GET", "POST"],
-  credentials: true
+  credentials: true,
 }));
 
 app.use(express.json());
-
-// ✅ Ruta de checkout
 app.use("/api/checkout", checkoutRoute);
-
-// ✅ Logs útiles
-console.log("[Stripe key]", process.env.STRIPE_SECRET_KEY ? "✔️ Cargada" : "❌ No cargada");
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
