@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 
     res.status(200).json({ url: session.url });
   } catch (error) {
-    console.error("Stripe Error:", error.message);
+    console.error("Stripe Error:", error);
     res.status(500).json({ error: "Stripe session creation failed" });
   }
 });
